@@ -1,1 +1,72 @@
+---
+title: "Análise de Dados de Aves"
+output: 
+  html_document: 
+    toc: true
+    toc_float: true
+    df_print: paged
+  word_document: 
+    toc: true
+---
+## Criando um relatório usando RMarkdown
+Essa atividade faz parte de um pré requisito para a disciplina de Bioinformática. Vamos mostrar alguns gráficos e tabelas comparativas dos dados do arquivo *birds*.
 
+``` {r dados, message=FALSE, warning=FALSE, include=FALSE}
+library(ggplot2)
+library(knitr)
+library(flextable) 
+library(openxlsx)
+library(tidyverse)
+
+setwd ("C:/Users/profj/OneDrive/Documentos/Doutorado/Bioinformática/R files")
+aves <- read.xlsx("birds.xlsx")
+aves <- na.omit(aves)
+
+```
+
+## Histograma da distribuição do comprimento do úmero (huml)
+
+```{r dados2, message=FALSE, warning=FALSE, include=TRUE}
+ggplot(aves, aes(x = huml)) + 
+  geom_histogram(binwidth = 5, fill = "lightyellow", color = "black") + 
+  labs(title = "Distribuição do Comprimento do Úmero",
+       x = "Comprimento do Úmero (mm)",
+       y = "Frequência")
+```
+
+A distribuição decrescente do comprimento do úmero demonstra que:
+Variabilidade: O gráfico mostra que há uma grande variabilidade no comprimento das asas das aves no conjunto de dados.
+Interpretação da assimetria: A assimetria à direita sugere que fatores como adaptações a nichos ecológicos específicos ou a presença de espécies com asas particularmente longas podem estar influenciando a distribuição.
+Importância dos outliers: Os outliers podem representar espécies com características distintas ou erros de medição. É importante investigá-los para entender sua natureza.
+
+## Gráfico de barras da distribuição das espécies (type)
+```{r dados3, message=FALSE, warning=FALSE, include=TRUE}
+ggplot(aves, aes(x = type)) + 
+  geom_bar(fill = "lightgreen", color = "black") + 
+  labs(title = "Distribuição das Espécies de Aves",
+       x = "Espécie",
+       y = "Contagem")
+
+
+```
+
+A análise da figura 2 demonstra a distribuição da freqUência das espécies de aves. Nesse sentido, podemos dividir em três grupos com as frequências altas, moderadas e baixas.
+Alta: As espécies SO e SW são as mais frequentes, com ambas ultrapassando 110 indivíduos.
+Moderada: As espécies P, R e W têm frequências moderadas, variando entre 35 e 70 indivíduos.
+Baixa: A espécie T apresenta a menor frequência, com cerca de 25 indivíduos.
+
+## Tabela demonstrando a média das medidas morfométricas por tipo de ave
+
+```{r dados4, message=FALSE, warning=FALSE, include=TRUE}
+#Calcular a média de cada medida por tipo de ave
+medias_aves <- aggregate(. ~ type, data = aves, FUN = mean, na.rm = TRUE)
+flextable(medias_aves) %>% 
+  set_caption("Média das Medidas Morfométricas por Tipo de Ave") %>% 
+  autofit()
+  
+```
+A partir da análise da tabela acima, é possível inferir que:
+SW (116): As aves do tipo SW apresentam, em média, os maiores valores para a maioria das medidas, indicando que são aves maiores em comparação aos outros tipos.
+SO (124): As aves do tipo SO, por outro lado, têm as menores médias para a maioria das medidas, sugerindo que esse grupo é composto por aves menores.
+P (38), R (48), T (23): Os tipos P, R e T apresentam valores intermediários entre SW e SO, com algumas variações entre as medidas.
+Variação: As medidas com maior variação entre os tipos de aves são huml (comprimento do úmero), ulnal (comprimento da ulna) e tibl (comprimento da tíbia). Essas medidas podem ser importantes para distinguir os tipos de aves.
